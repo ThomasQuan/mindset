@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator nestgraphql {
+  provider               = "node node_modules/prisma-nestjs-graphql"
+  output                 = "../@generated/prisma-nestjs-graphql"
+  fields_Validator_from  = "class-validator"
+  fields_Validator_input = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  firstName    String
+  lastName     String
+  fullName     String
+  email        String    @unique
+  /// @HideField()
+  password     String
+  status       String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  title        String?
+  headline     String?
+  lastActiveAt DateTime?
+  avatarURL    String?
+  role         Role      @relation(fields: [roleId], references: [id])
+  roleId       String
+  blogs        Blog[]
+  projects     Project[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
+
+model Blog {
+  id          String    @id @default(uuid())
+  title       String
+  subtitle    String?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  hasEdited   Boolean   @default(false)
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  tags        Tag[]
+  contents    Content[]
+  blogStat    BlogStat?
+}
+
+model BlogStat {
+  id            String @id @default(uuid())
+  blog          Blog   @relation(fields: [blogId], references: [id])
+  blogId        String @unique
+  likedCount    Int    @default(0)
+  dislikedCount Int    @default(0)
+  visitedCount  Int    @default(0)
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  name        String
+  subtitle    String?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  hasEdited   Boolean   @default(false)
+  gitRepoLink String?
+  projectLink String?
+  designLink  String?
+  status      String
+  orderNo     Int
+  objectAs    String
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  tags        Tag[]
+  contents    Content[]
+}
+
+model Tag {
+  id            String    @id @default(uuid())
+  title         String
+  slug          String    @unique
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  color         String?
+  category      String?
+  categoryOrder Int?
+  tagOrder      Int?
+  blogs         Blog[]
+  projects      Project[]
+}
+
+model Content {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  markdownContent String
+  htmlContent     String
+  status          String
+  orderNo         Int
+  objectAs        String
+  blog            Blog?    @relation(fields: [blogId], references: [id])
+  blogId          String?
+  project         Project? @relation(fields: [projectId], references: [id])
+  projectId       String?
+  assets          Asset[]
+}
+
+model Asset {
+  id         String    @id @default(uuid())
+  name       String
+  url        String
+  width      Int?
+  height     Int?
+  resolution String?
+  contents   Content[]
+}
