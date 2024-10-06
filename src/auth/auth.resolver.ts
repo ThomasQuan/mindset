@@ -1,15 +1,14 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { LoginResponse } from './auth.types';
-import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from './gql-auth.guard';
+import { Public } from 'src/decorators/public';
 
 @Resolver()
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
   @Mutation(() => LoginResponse)
-  @UseGuards(GqlAuthGuard)
+  @Public()
   async login(
     @Args('email') email: string,
     @Args('password') password: string,

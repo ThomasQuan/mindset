@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { FindManyUsersInput } from './dto/findManyUser.input';
 import { Role } from '../role/entities/role.entity';
 import { BaseService } from '../base/base.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService extends BaseService<
@@ -19,8 +20,9 @@ export class UserService extends BaseService<
   }
 
   async findByEmail(email: string): Promise<User | null> {
+    console.log('Find by email', email);
     return this.prisma.user.findUnique({
-      where: { email },
+      where: { email: email },
     });
   }
 
@@ -34,5 +36,18 @@ export class UserService extends BaseService<
         },
       },
     });
+  }
+
+  /**
+   * Create a new user
+   * Bcrypt the password is password is provided
+   * @param data - The data for the user to create
+   * @returns The created user
+   */
+  async create(data: CreateUserInput): Promise<User> {
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
+    return super.create(data);
   }
 }

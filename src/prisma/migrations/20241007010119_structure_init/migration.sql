@@ -10,6 +10,12 @@ CREATE TYPE "BlogStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
 -- CreateEnum
 CREATE TYPE "ContentStatus" AS ENUM ('HIDDEN', 'VISIBLE');
 
+-- CreateEnum
+CREATE TYPE "ReferenceModelSlug" AS ENUM ('blog', 'project', 'content', 'asset', 'tag', 'user', 'role', 'permission');
+
+-- CreateEnum
+CREATE TYPE "ActionSlug" AS ENUM ('create', 'read', 'update', 'delete');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -23,7 +29,7 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "title" TEXT,
     "headline" TEXT,
-    "lastActiveAt" TIMESTAMP(3),
+    "lastActiveAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "avatarURL" TEXT,
     "roleId" TEXT NOT NULL,
 
@@ -34,12 +40,26 @@ CREATE TABLE "User" (
 CREATE TABLE "Role" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
+    "slug" TEXT NOT NULL DEFAULT 'user',
     "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Permission" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "referenceModel" "ReferenceModelSlug" NOT NULL,
+    "action" "ActionSlug" NOT NULL,
+
+    CONSTRAINT "Permission_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -116,6 +136,8 @@ CREATE TABLE "Content" (
     "objectAs" TEXT NOT NULL,
     "blogId" TEXT,
     "projectId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Content_pkey" PRIMARY KEY ("id")
 );
@@ -128,8 +150,16 @@ CREATE TABLE "Asset" (
     "width" INTEGER,
     "height" INTEGER,
     "resolution" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Asset_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_PermissionToRole" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -157,6 +187,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "Role_slug_key" ON "Role"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Permission_slug_key" ON "Permission"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "BlogStat_blogId_key" ON "BlogStat"("blogId");
 
 -- CreateIndex
@@ -164,6 +197,12 @@ CREATE UNIQUE INDEX "Tag_slug_key" ON "Tag"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Content_slug_key" ON "Content"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_PermissionToRole_AB_unique" ON "_PermissionToRole"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_PermissionToRole_B_index" ON "_PermissionToRole"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_BlogToTag_AB_unique" ON "_BlogToTag"("A", "B");
@@ -200,6 +239,12 @@ ALTER TABLE "Content" ADD CONSTRAINT "Content_blogId_fkey" FOREIGN KEY ("blogId"
 
 -- AddForeignKey
 ALTER TABLE "Content" ADD CONSTRAINT "Content_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PermissionToRole" ADD CONSTRAINT "_PermissionToRole_A_fkey" FOREIGN KEY ("A") REFERENCES "Permission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PermissionToRole" ADD CONSTRAINT "_PermissionToRole_B_fkey" FOREIGN KEY ("B") REFERENCES "Role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_BlogToTag" ADD CONSTRAINT "_BlogToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Blog"("id") ON DELETE CASCADE ON UPDATE CASCADE;

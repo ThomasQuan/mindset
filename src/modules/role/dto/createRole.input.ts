@@ -10,4 +10,7 @@ export class CreateRoleInput {
 
   @Field(() => [String], { nullable: true })
   userIds?: string[];
+
+  @Field(() => [String], { nullable: true })
+  permissions?: string[];
 }

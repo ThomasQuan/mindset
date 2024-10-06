@@ -14,4 +14,7 @@ export class UpdateRoleInput extends PartialType(CreateRoleInput) {
 
   @Field(() => [String], { nullable: true })
   userIds?: string[];
+
+  @Field(() => [String], { nullable: true })
+  permissions?: string[];
 }

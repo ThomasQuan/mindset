@@ -4,12 +4,17 @@ import { BlogStat } from './entities/blogStat.entity';
 import { CreateBlogStatInput } from './dto/createBlogStat.input';
 import { UpdateBlogStatInput } from './dto/updateBlogStat.input';
 import { FindManyBlogStatsInput } from './dto/findManyBlogStat.input';
+import { RolesGuard } from 'src/auth/guard/role.guard';
+import { UseGuards } from '@nestjs/common';
+import { Permission } from 'src/decorators/permission';
 
 @Resolver(() => BlogStat)
+@UseGuards(RolesGuard)
 export class BlogStatResolver {
   constructor(private readonly blogStatService: BlogStatService) {}
 
   @Mutation(() => BlogStat)
+  @Permission(['create', 'blogStat'])
   createBlogStat(
     @Args('createBlogStatInput') createBlogStatInput: CreateBlogStatInput,
   ) {
@@ -17,6 +22,7 @@ export class BlogStatResolver {
   }
 
   @Query(() => [BlogStat], { name: 'blogStat' })
+  @Permission(['read', 'blogStat'])
   blogStats(
     @Args('params', { nullable: true }) params?: FindManyBlogStatsInput,
   ) {
@@ -24,11 +30,13 @@ export class BlogStatResolver {
   }
 
   @Query(() => BlogStat, { name: 'blogStat' })
+  @Permission(['read', 'blogStat'])
   blogStat(@Args('id', { type: () => ID }) id: string) {
     return this.blogStatService.findOne(id);
   }
 
   @Mutation(() => BlogStat)
+  @Permission(['update', 'blogStat'])
   updateBlogStat(
     @Args('updateBlogStatInput') updateBlogStatInput: UpdateBlogStatInput,
   ) {
@@ -39,6 +47,7 @@ export class BlogStatResolver {
   }
 
   @Mutation(() => BlogStat)
+  @Permission(['delete', 'blogStat'])
   deleteBlogStat(@Args('id', { type: () => ID }) id: string) {
     return this.blogStatService.delete(id);
   }

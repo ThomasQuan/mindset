@@ -59,7 +59,7 @@ model User {
   updatedAt    DateTime   @updatedAt
   title        String?
   headline     String?
-  lastActiveAt DateTime?
+  lastActiveAt DateTime @default(now())
   avatarURL    String?
   role         Role       @relation(fields: [roleId], references: [id])
   roleId       String
@@ -68,13 +68,46 @@ model User {
 }
 
 model Role {
+  id          String       @id @default(uuid())
+  title       String
+  slug        String     @unique @default("user")
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  users       User[]
+  permissions Permission[]
+}
+
+enum ReferenceModelSlug {
+  blog
+  project
+  content
+  asset
+  tag
+  user
+  role
+  permission
+}
+
+enum ActionSlug {
+  create
+  read
+  update
+  delete
+}
+
+model Permission {
   id          String   @id @default(uuid())
   title       String
-  slug        String   @unique
+  slug        String    @unique
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  users       User[]
+
+  referenceModel ReferenceModelSlug
+  action         ActionSlug
+
+  roles Role[]
 }
 
 model Blog {
@@ -151,6 +184,8 @@ model Content {
   project         Project?      @relation(fields: [projectId], references: [id])
   projectId       String?
   assets          Asset[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 model Asset {
@@ -161,4 +196,6 @@ model Asset {
   height     Int?
   resolution String?
   contents   Content[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }

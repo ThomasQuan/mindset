@@ -13,12 +13,17 @@ import { CreateUserInput } from './dto/createUser.input';
 import { UpdateUserInput } from './dto/updateUser.input';
 import { FindManyUsersInput } from './dto/findManyUser.input';
 import { Role } from '../role/entities/role.entity';
+import { RolesGuard } from 'src/auth/guard/role.guard';
+import { UseGuards } from '@nestjs/common';
+import { Permission } from 'src/decorators/permission';
 
 @Resolver(() => User)
+@UseGuards(RolesGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => [User])
+  @Permission(['read', 'user'])
   async users(
     @Args('params', { nullable: true }) params?: FindManyUsersInput,
   ): Promise<User[]> {
@@ -26,11 +31,13 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
+  @Permission(['read', 'user'])
   async user(@Args('id', { type: () => ID }) id: string): Promise<User | null> {
     return this.userService.findOne(id);
   }
 
   @Mutation(() => User)
+  @Permission(['create', 'user'])
   async createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
@@ -38,6 +45,7 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
+  @Permission(['update', 'user'])
   async updateUser(
     @Args('id', { type: () => ID }) id: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
@@ -46,6 +54,7 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
+  @Permission(['delete', 'user'])
   async deleteUser(@Args('id', { type: () => ID }) id: string): Promise<User> {
     return this.userService.delete(id);
   }
@@ -53,6 +62,7 @@ export class UserResolver {
   //  --- RESOLVE FIELDS ---
 
   @ResolveField(() => Role)
+  @Permission(['read', 'role'])
   async role(@Parent() user: User): Promise<Role> {
     return this.userService.getRole(user.id);
   }
