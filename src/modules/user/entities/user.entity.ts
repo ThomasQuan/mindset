@@ -1,5 +1,9 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { IsStrongPassword } from 'class-validator';
+import { UserStatus } from 'src/@generated/prisma-nestjs-graphql/prisma/user-status.enum';
+import { UserStatus as UserStatusPrisma } from '@prisma/client';
+import { Blog } from 'src/modules/blog/entities/blog.entity';
+import { Project } from 'src/modules/project/entities/project.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
 
 @ObjectType()
@@ -19,12 +23,11 @@ export class User {
   @Field()
   email: string;
 
-  @Field()
   @IsStrongPassword()
   password: string;
 
-  @Field()
-  status: string;
+  @Field(() => UserStatus)
+  status: UserStatusPrisma;
 
   @Field()
   createdAt: Date;
@@ -47,9 +50,9 @@ export class User {
   @Field(() => Role, { nullable: true })
   role?: Role;
 
-  // @Field(() => [Blog])
-  // blogs: Blog[];
+  @Field(() => [Blog])
+  blogs?: Blog[];
 
-  // @Field(() => [Project])
-  // projects: Project[];
+  @Field(() => [Project])
+  projects?: Project[];
 }

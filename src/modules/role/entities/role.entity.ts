@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, GraphQLISODateTime } from '@nestjs/graphql';
+import { Slug } from 'src/decorators/slug';
 import { User } from 'src/modules/user/entities/user.entity';
 
 @ObjectType()
@@ -10,6 +11,7 @@ export class Role {
   title: string;
 
   @Field(() => String)
+  @Slug('title')
   slug: string;
 
   @Field(() => String)

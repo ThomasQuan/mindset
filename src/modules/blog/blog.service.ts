@@ -1,26 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBlogInput } from './dto/create-blog.input';
-import { UpdateBlogInput } from './dto/update-blog.input';
+import { CreateBlogInput } from './dto/createBlog.input';
+import { UpdateBlogInput } from './dto/updateBlog.input';
+import { BaseService } from '../base/base.service';
+import { FindManyBlogsInput } from './dto/findManyBlog.input';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Blog } from './entities/blog.entity';
 
 @Injectable()
-export class BlogService {
-  create(createBlogInput: CreateBlogInput) {
-    return 'This action adds a new blog';
-  }
-
-  findAll() {
-    return `This action returns all blog`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} blog`;
-  }
-
-  update(id: number, updateBlogInput: UpdateBlogInput) {
-    return `This action updates a #${id} blog`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+export class BlogService extends BaseService<
+  Blog,
+  CreateBlogInput,
+  UpdateBlogInput,
+  FindManyBlogsInput
+> {
+  constructor(prisma: PrismaService) {
+    super(prisma, 'blog', Blog);
   }
 }

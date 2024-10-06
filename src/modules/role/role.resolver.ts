@@ -1,9 +1,18 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { RoleService } from './role.service';
 import { Role } from './entities/role.entity';
 import { CreateRoleInput } from './dto/createRole.input';
 import { UpdateRoleInput } from './dto/updateRole.input';
 import { FindManyRolesInput } from './dto/findManyRoles.input';
+import { User } from '../user/entities/user.entity';
 
 @Resolver(() => Role)
 export class RoleResolver {
@@ -39,5 +48,12 @@ export class RoleResolver {
   @Mutation(() => Role)
   async deleteRole(@Args('id', { type: () => ID }) id: string): Promise<Role> {
     return this.roleService.delete(id);
+  }
+
+  // --- RESOLVE FIELDS ---
+
+  @ResolveField(() => [User])
+  async users(@Parent() role: Role): Promise<User[]> {
+    return this.roleService.getUsers(role.id);
   }
 }

@@ -2,6 +2,109 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type BlogStat {
+  id: ID!
+  likedCount: Int!
+  dislikedCount: Int!
+  visitedCount: Int!
+  blog: Blog!
+  blogId: String!
+}
+
+type Asset {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Tag {
+  id: ID!
+  title: String!
+  slug: String!
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  color: String
+  category: String
+  categoryOrder: Int
+  tagOrder: Int
+  blogs: [Blog!]!
+  projects: [Project!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Project {
+  id: ID!
+  name: String!
+  subtitle: String
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  hasEdited: Boolean!
+  gitRepoLink: String
+  projectLink: String
+  designLink: String
+  status: ProjectStatus!
+  orderNo: Int!
+  objectAs: String!
+  author: User!
+  authorId: String!
+  tags: [Tag!]!
+  contents: [Content!]!
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+type Content {
+  id: ID!
+  title: String!
+  slug: String!
+  markdownContent: String!
+  htmlContent: String!
+  status: ContentStatus!
+  orderNo: Int!
+  objectAs: String!
+  blog: Blog!
+  blogId: String!
+  project: Project!
+  projectId: String!
+  assets: [Asset!]!
+}
+
+enum ContentStatus {
+  HIDDEN
+  VISIBLE
+}
+
+type Blog {
+  id: ID!
+  title: String!
+  subtitle: String!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  hasEdited: Boolean!
+  author: User!
+  authorId: String!
+  tags: [Tag!]!
+  contents: [Content!]!
+  blogStat: BlogStat!
+  status: BlogStatus!
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 type Role {
   id: ID!
   title: String!
@@ -12,19 +115,13 @@ type Role {
   users: [User!]
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type User {
   id: ID!
   firstName: String!
   lastName: String!
   fullName: String!
   email: String!
-  password: String!
-  status: String!
+  status: UserStatus!
   createdAt: DateTime!
   updatedAt: DateTime!
   title: String
@@ -32,15 +129,21 @@ type User {
   lastActiveAt: DateTime
   avatarURL: String
   role: Role
+  blogs: [Blog!]!
+  projects: [Project!]!
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  DEACTIVATED
+  PENDING
+  CREATED
 }
 
 type LoginResponse {
   access_token: String!
-}
-
-type Blog {
-  """Example field (placeholder)"""
-  exampleField: Int!
 }
 
 type Query {
@@ -48,7 +151,13 @@ type Query {
   user(id: ID!): User
   roles(params: FindManyRolesInput): [Role!]!
   role(id: ID!): Role
-  blog(id: Int!): Blog!
+  blog(id: ID!): Blog!
+  content(id: ID!): Content!
+  project(id: ID!): Project!
+  tags(findManyTagsInput: FindManyTagsInput): [Tag!]!
+  tag(id: ID!): Tag!
+  asset(id: Int!): Asset!
+  blogStat(id: ID!): BlogStat!
 }
 
 input FindManyUsersInput {
@@ -69,7 +178,7 @@ input UserWhereUniqueInput {
   lastName: StringFilter
   fullName: StringFilter
   password: StringFilter
-  status: StringFilter
+  status: EnumUserStatusFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   title: StringNullableFilter
@@ -92,7 +201,7 @@ input UserWhereInput {
   fullName: StringFilter
   email: StringFilter
   password: StringFilter
-  status: StringFilter
+  status: EnumUserStatusFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   title: StringNullableFilter
@@ -137,6 +246,20 @@ input NestedStringFilter {
   startsWith: String
   endsWith: String
   not: NestedStringFilter
+}
+
+input EnumUserStatusFilter {
+  equals: UserStatus
+  in: [UserStatus!]
+  notIn: [UserStatus!]
+  not: NestedEnumUserStatusFilter
+}
+
+input NestedEnumUserStatusFilter {
+  equals: UserStatus
+  in: [UserStatus!]
+  notIn: [UserStatus!]
+  not: NestedEnumUserStatusFilter
 }
 
 input DateTimeFilter {
@@ -254,6 +377,7 @@ input BlogWhereInput {
   updatedAt: DateTimeFilter
   hasEdited: BoolFilter
   authorId: StringFilter
+  status: EnumBlogStatusFilter
   author: UserRelationFilter
   tags: TagListRelationFilter
   contents: ContentListRelationFilter
@@ -268,6 +392,20 @@ input BoolFilter {
 input NestedBoolFilter {
   equals: Boolean
   not: NestedBoolFilter
+}
+
+input EnumBlogStatusFilter {
+  equals: BlogStatus
+  in: [BlogStatus!]
+  notIn: [BlogStatus!]
+  not: NestedEnumBlogStatusFilter
+}
+
+input NestedEnumBlogStatusFilter {
+  equals: BlogStatus
+  in: [BlogStatus!]
+  notIn: [BlogStatus!]
+  not: NestedEnumBlogStatusFilter
 }
 
 input UserRelationFilter {
@@ -341,13 +479,27 @@ input ProjectWhereInput {
   gitRepoLink: StringNullableFilter
   projectLink: StringNullableFilter
   designLink: StringNullableFilter
-  status: StringFilter
+  status: EnumProjectStatusFilter
   orderNo: IntFilter
   objectAs: StringFilter
   authorId: StringFilter
   author: UserRelationFilter
   tags: TagListRelationFilter
   contents: ContentListRelationFilter
+}
+
+input EnumProjectStatusFilter {
+  equals: ProjectStatus
+  in: [ProjectStatus!]
+  notIn: [ProjectStatus!]
+  not: NestedEnumProjectStatusFilter
+}
+
+input NestedEnumProjectStatusFilter {
+  equals: ProjectStatus
+  in: [ProjectStatus!]
+  notIn: [ProjectStatus!]
+  not: NestedEnumProjectStatusFilter
 }
 
 input IntFilter {
@@ -387,7 +539,7 @@ input ContentWhereInput {
   slug: StringFilter
   markdownContent: StringFilter
   htmlContent: StringFilter
-  status: StringFilter
+  status: EnumContentStatusFilter
   orderNo: IntFilter
   objectAs: StringFilter
   blogId: StringNullableFilter
@@ -395,6 +547,20 @@ input ContentWhereInput {
   blog: BlogNullableRelationFilter
   project: ProjectNullableRelationFilter
   assets: AssetListRelationFilter
+}
+
+input EnumContentStatusFilter {
+  equals: ContentStatus
+  in: [ContentStatus!]
+  notIn: [ContentStatus!]
+  not: NestedEnumContentStatusFilter
+}
+
+input NestedEnumContentStatusFilter {
+  equals: ContentStatus
+  in: [ContentStatus!]
+  notIn: [ContentStatus!]
+  not: NestedEnumContentStatusFilter
 }
 
 input BlogNullableRelationFilter {
@@ -469,6 +635,32 @@ input RoleWhereUniqueInput {
   users: UserListRelationFilter
 }
 
+input FindManyTagsInput {
+  skip: Int
+  take: Int
+  cursor: TagWhereUniqueInput
+  where: TagWhereUniqueInput
+  orderBy: TagWhereUniqueInput
+}
+
+input TagWhereUniqueInput {
+  id: String
+  slug: String
+  AND: [TagWhereInput!]
+  OR: [TagWhereInput!]
+  NOT: [TagWhereInput!]
+  title: StringFilter
+  description: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  color: StringNullableFilter
+  category: StringNullableFilter
+  categoryOrder: IntNullableFilter
+  tagOrder: IntNullableFilter
+  blogs: BlogListRelationFilter
+  projects: ProjectListRelationFilter
+}
+
 type Mutation {
   login(email: String!, password: String!): LoginResponse!
   createUser(createUserInput: CreateUserInput!): User!
@@ -479,7 +671,22 @@ type Mutation {
   deleteRole(id: ID!): Role!
   createBlog(createBlogInput: CreateBlogInput!): Blog!
   updateBlog(updateBlogInput: UpdateBlogInput!): Blog!
-  removeBlog(id: Int!): Blog!
+  deleteBlog(id: ID!): Blog!
+  createContent(createContentInput: CreateContentInput!): Content!
+  updateContent(updateContentInput: UpdateContentInput!): Content!
+  deleteContent(id: ID!): Content!
+  createProject(createProjectInput: CreateProjectInput!): Project!
+  updateProject(updateProjectInput: UpdateProjectInput!): Project!
+  deleteProject(id: ID!): Project!
+  createTag(createTagInput: CreateTagInput!): Tag!
+  updateTag(updateTagInput: UpdateTagInput!): Tag!
+  deleteTag(id: ID!): Tag!
+  createAsset(createAssetInput: CreateAssetInput!): Asset!
+  updateAsset(updateAssetInput: UpdateAssetInput!): Asset!
+  removeAsset(id: Int!): Asset!
+  createBlogStat(createBlogStatInput: CreateBlogStatInput!): BlogStat!
+  updateBlogStat(updateBlogStatInput: UpdateBlogStatInput!): BlogStat!
+  deleteBlogStat(id: ID!): BlogStat!
 }
 
 input CreateUserInput {
@@ -488,7 +695,7 @@ input CreateUserInput {
   fullName: String!
   email: String!
   password: String!
-  status: String!
+  status: UserStatus!
   title: String
   headline: String
   avatarURL: String
@@ -521,12 +728,117 @@ input UpdateRoleInput {
 }
 
 input CreateBlogInput {
+  title: String!
+  subtitle: String!
+  description: String!
+  status: BlogStatus!
+  authorId: String!
+  tagIds: [String!]!
+  contents: [CreateContentInput!]!
+}
+
+input CreateContentInput {
+  title: String!
+  slug: String!
+  markdownContent: String!
+  htmlContent: String!
+  status: ContentStatus!
+  orderNo: Int!
+  objectAs: String!
+}
+
+input UpdateBlogInput {
+  id: String!
+  title: String
+  description: String
+  status: BlogStatus
+  subtitle: String
+  tagIds: [String!]
+  contents: [UpdateContentInput!]
+}
+
+input UpdateContentInput {
+  title: String
+  slug: String
+  markdownContent: String
+  htmlContent: String
+  status: ContentStatus
+  orderNo: Int
+  objectAs: String
+  id: String!
+}
+
+input CreateProjectInput {
+  name: String!
+  subtitle: String!
+  description: String!
+  gitRepoLink: String!
+  projectLink: String!
+  designLink: String!
+  status: ProjectStatus!
+  orderNo: Int!
+  objectAs: String!
+  authorId: String!
+  tagIds: [String!]!
+  contents: [CreateContentInput!]!
+}
+
+input UpdateProjectInput {
+  id: ID!
+  name: String
+  subtitle: String
+  description: String
+  gitRepoLink: String
+  projectLink: String
+  designLink: String
+  status: ProjectStatus
+  orderNo: Int
+  objectAs: String
+  tagIds: [String!]
+  contents: [UpdateContentInput!]
+}
+
+input CreateTagInput {
+  title: String!
+  description: String!
+  color: String!
+  category: String!
+  categoryOrder: Int!
+  tagOrder: Int!
+}
+
+input UpdateTagInput {
+  title: String!
+  description: String!
+  color: String!
+  category: String!
+  categoryOrder: Int!
+  tagOrder: Int!
+  id: String!
+}
+
+input CreateAssetInput {
   """Example field (placeholder)"""
   exampleField: Int!
 }
 
-input UpdateBlogInput {
+input UpdateAssetInput {
   """Example field (placeholder)"""
   exampleField: Int
   id: Int!
+}
+
+input CreateBlogStatInput {
+  blogId: ID!
+  likedCount: Int!
+  dislikedCount: Int!
+  visitedCount: Int!
+}
+
+input UpdateBlogStatInput {
+  blogId: ID!
+  likedCount: Int!
+  dislikedCount: Int!
+  visitedCount: Int!
+  id: ID!
 }

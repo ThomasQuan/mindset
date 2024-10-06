@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../modules/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { UserStatus } from 'src/@generated/prisma-nestjs-graphql/prisma/user-status.enum';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,7 @@ export class AuthService {
         lastName: profile.lastName || '',
         fullName: `${profile.firstName} ${profile.lastName}`,
         password: '', // You might want to generate a random password here
-        status: 'active',
+        status: UserStatus.ACTIVE,
         roleId: 'default-role-id', // You'll need to set up a default role
       });
     }

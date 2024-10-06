@@ -9,6 +9,11 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RoleModule } from './modules/role/role.module';
 import { BlogModule } from './modules/blog/blog.module';
+import { ContentModule } from './modules/content/content.module';
+import { ProjectModule } from './modules/project/project.module';
+import { TagModule } from './modules/tag/tag.module';
+import { AssetModule } from './modules/asset/asset.module';
+import { BlogStatModule } from './modules/blogStat/blogStat.module';
 
 @Module({
   imports: [
@@ -22,6 +27,11 @@ import { BlogModule } from './modules/blog/blog.module';
     PrismaModule,
     RoleModule,
     BlogModule,
+    ContentModule,
+    ProjectModule,
+    TagModule,
+    AssetModule,
+    BlogStatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

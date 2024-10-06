@@ -1,16 +1,29 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import {
+  IsAlpha,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { UserStatus } from 'src/@generated/prisma-nestjs-graphql/prisma/user-status.enum';
 
 @InputType()
 export class UpdateUserInput {
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
+  @IsAlpha('en-US', {
+    message: 'Invalid first name: only letters are allowed',
+  })
   firstName?: string;
 
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
+  @IsAlpha('en-US', {
+    message: 'Invalid last name: only letters are allowed',
+  })
   lastName?: string;
 
   @Field({ nullable: true })
@@ -20,8 +33,8 @@ export class UpdateUserInput {
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(UserStatus)
+  status?: UserStatus;
 
   @Field({ nullable: true })
   @IsOptional()

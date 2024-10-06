@@ -1,3 +1,15 @@
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'BLOCKED', 'DEACTIVATED', 'PENDING', 'CREATED');
+
+-- CreateEnum
+CREATE TYPE "ProjectStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
+
+-- CreateEnum
+CREATE TYPE "BlogStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
+
+-- CreateEnum
+CREATE TYPE "ContentStatus" AS ENUM ('HIDDEN', 'VISIBLE');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -6,7 +18,7 @@ CREATE TABLE "User" (
     "fullName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "status" "UserStatus" NOT NULL DEFAULT 'CREATED',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "title" TEXT,
@@ -40,6 +52,7 @@ CREATE TABLE "Blog" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "hasEdited" BOOLEAN NOT NULL DEFAULT false,
     "authorId" TEXT NOT NULL,
+    "status" "BlogStatus" NOT NULL DEFAULT 'DRAFT',
 
     CONSTRAINT "Blog_pkey" PRIMARY KEY ("id")
 );
@@ -67,7 +80,7 @@ CREATE TABLE "Project" (
     "gitRepoLink" TEXT,
     "projectLink" TEXT,
     "designLink" TEXT,
-    "status" TEXT NOT NULL,
+    "status" "ProjectStatus" NOT NULL DEFAULT 'DRAFT',
     "orderNo" INTEGER NOT NULL,
     "objectAs" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
@@ -98,7 +111,7 @@ CREATE TABLE "Content" (
     "slug" TEXT NOT NULL,
     "markdownContent" TEXT NOT NULL,
     "htmlContent" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "status" "ContentStatus" NOT NULL DEFAULT 'VISIBLE',
     "orderNo" INTEGER NOT NULL,
     "objectAs" TEXT NOT NULL,
     "blogId" TEXT,
