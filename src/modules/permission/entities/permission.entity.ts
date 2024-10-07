@@ -1,12 +1,12 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { ActionSlug } from 'src/@generated/prisma-nestjs-graphql/prisma/action-slug.enum';
 import { ReferenceModelSlug } from 'src/@generated/prisma-nestjs-graphql/prisma/reference-model-slug.enum';
-import { Role } from 'src/modules/role/entities/role.entity';
 import {
   ActionSlug as ActionSlugPrisma,
   ReferenceModelSlug as ReferenceModelSlugPrisma,
 } from '@prisma/client';
 import { Slug } from 'src/decorators/slug';
+import { Role } from 'src/modules/role/entities/role.entity';
 
 @ObjectType()
 export class Permission {

@@ -2,9 +2,10 @@ import { IsOptional, IsNumber, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Prisma } from '@prisma/client';
 import { InputType, Field, Int } from '@nestjs/graphql';
+import { AssetWhereUniqueInput } from 'src/@generated/prisma-nestjs-graphql/asset/asset-where-unique.input';
 
 @InputType()
-export class FindManyBlogsInput {
+export class FindManyAssetsInput {
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber()
@@ -17,18 +18,18 @@ export class FindManyBlogsInput {
   @Type(() => Number)
   take?: number;
 
-  @Field(() => Object, { nullable: true })
+  @Field(() => AssetWhereUniqueInput, { nullable: true })
   @IsOptional()
   @IsObject()
-  cursor?: Prisma.BlogWhereUniqueInput;
+  cursor?: Prisma.AssetWhereUniqueInput;
 
-  @Field(() => Object, { nullable: true })
+  @Field(() => AssetWhereUniqueInput, { nullable: true })
   @IsOptional()
   @IsObject()
-  where?: Prisma.BlogWhereInput;
+  where?: Prisma.AssetWhereInput;
 
-  @Field(() => Object, { nullable: true })
+  @Field(() => AssetWhereUniqueInput, { nullable: true })
   @IsOptional()
   @IsObject()
-  orderBy?: Prisma.BlogOrderByWithRelationInput;
+  orderBy?: Prisma.AssetOrderByWithRelationInput;
 }

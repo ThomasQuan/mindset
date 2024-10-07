@@ -1,12 +1,28 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { ContentService } from './content.service';
-import { Content } from './entities/content.entity';
 import { CreateContentInput } from './dto/createContent.input';
 import { UpdateContentInput } from './dto/updateContent.input';
 import { FindManyContentsInput } from './dto/findManyContents.input';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/guard/role.guard';
 import { Permission } from 'src/decorators/permission';
+import { Project } from 'src/@generated/prisma-nestjs-graphql/project/project.model';
+import {
+  Project as ProjectPrisma,
+  Asset as AssetPrisma,
+  Blog as BlogPrisma,
+} from '@prisma/client';
+import { Asset } from 'src/@generated/prisma-nestjs-graphql/asset/asset.model';
+import { Blog } from 'src/@generated/prisma-nestjs-graphql/blog/blog.model';
+import { Content } from 'src/@generated/prisma-nestjs-graphql/content/content.model';
 
 @Resolver(() => Content)
 @UseGuards(RolesGuard)
@@ -48,5 +64,20 @@ export class ContentResolver {
   @Permission(['delete', 'content'])
   deleteContent(@Args('id', { type: () => ID }) id: string) {
     return this.contentService.delete(id);
+  }
+
+  @ResolveField(() => Project)
+  async project(@Parent() content: Content): Promise<ProjectPrisma> {
+    return this.contentService.getProject(content.id);
+  }
+
+  @ResolveField(() => [Asset])
+  async assets(@Parent() content: Content): Promise<AssetPrisma[]> {
+    return this.contentService.getAssets(content.id);
+  }
+
+  @ResolveField(() => Blog)
+  async blog(@Parent() content: Content): Promise<BlogPrisma> {
+    return this.contentService.getBlog(content.id);
   }
 }

@@ -2,11 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/createUser.input';
 import { UpdateUserInput } from './dto/updateUser.input';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from './entities/user.entity';
 import { FindManyUsersInput } from './dto/findManyUser.input';
-import { Role } from '../role/entities/role.entity';
 import { BaseService } from '../base/base.service';
 import * as bcrypt from 'bcrypt';
+import {
+  Blog as BlogPrisma,
+  Project as ProjectPrisma,
+  Role as RolePrisma,
+} from '@prisma/client';
+import { User } from 'src/@generated/prisma-nestjs-graphql/user/user.model';
 
 @Injectable()
 export class UserService extends BaseService<
@@ -26,7 +30,30 @@ export class UserService extends BaseService<
     });
   }
 
-  async getRole(id: string): Promise<Role | null> {
+  async create(data: CreateUserInput): Promise<User> {
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
+    return super.create(data);
+  }
+
+  async getBlogs(id: string): Promise<BlogPrisma[]> {
+    return this.prisma.blog.findMany({
+      where: {
+        authorId: id,
+      },
+    });
+  }
+
+  async getProjects(id: string): Promise<ProjectPrisma[]> {
+    return this.prisma.project.findMany({
+      where: {
+        authorId: id,
+      },
+    });
+  }
+
+  async getRole(id: string): Promise<RolePrisma | null> {
     return this.prisma.role.findFirst({
       where: {
         users: {
@@ -36,18 +63,5 @@ export class UserService extends BaseService<
         },
       },
     });
-  }
-
-  /**
-   * Create a new user
-   * Bcrypt the password is password is provided
-   * @param data - The data for the user to create
-   * @returns The created user
-   */
-  async create(data: CreateUserInput): Promise<User> {
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, 10);
-    }
-    return super.create(data);
   }
 }

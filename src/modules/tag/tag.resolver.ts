@@ -1,12 +1,23 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { TagService } from './tag.service';
-import { Tag } from './entities/tag.entity';
 import { CreateTagInput } from './dto/createTag.input';
 import { UpdateTagInput } from './dto/updateTag.input';
 import { FindManyTagsInput } from './dto/findManyTags.input';
 import { RolesGuard } from 'src/auth/guard/role.guard';
 import { UseGuards } from '@nestjs/common';
 import { Permission } from 'src/decorators/permission';
+import { Blog as BlogPrisma, Project as ProjectPrisma } from '@prisma/client';
+import { Tag } from './entities/tag.entity';
+import { Blog } from '../blog/entities/blog.entity';
+import { Project } from '../project/entities/project.entity';
 
 @Resolver(() => Tag)
 @UseGuards(RolesGuard)
@@ -44,5 +55,17 @@ export class TagResolver {
   @Permission(['delete', 'tag'])
   deleteTag(@Args('id', { type: () => ID }) id: string) {
     return this.tagService.delete(id);
+  }
+
+  @ResolveField(() => [Blog])
+  @Permission(['read', 'blog'])
+  async blogs(@Parent() tag: Tag): Promise<BlogPrisma[]> {
+    return this.tagService.getBlogs(tag.id);
+  }
+
+  @ResolveField(() => [Project])
+  @Permission(['read', 'project'])
+  async projects(@Parent() tag: Tag): Promise<ProjectPrisma[]> {
+    return this.tagService.getProjects(tag.id);
   }
 }

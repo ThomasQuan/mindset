@@ -8,14 +8,17 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { BlogService } from './blog.service';
-import { Blog } from './entities/blog.entity';
 import { CreateBlogInput } from './dto/createBlog.input';
 import { UpdateBlogInput } from './dto/updateBlog.input';
 import { FindManyBlogsInput } from './dto/findManyBlog.input';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/guard/role.guard';
 import { Permission } from 'src/decorators/permission';
-import { User } from '../user/entities/user.entity';
+import { Content } from 'src/@generated/prisma-nestjs-graphql/content/content.model';
+import { BlogStat } from 'src/@generated/prisma-nestjs-graphql/blog-stat/blog-stat.model';
+import { Tag } from 'src/@generated/prisma-nestjs-graphql/tag/tag.model';
+import { Blog } from 'src/@generated/prisma-nestjs-graphql/blog/blog.model';
+import { User } from 'src/@generated/prisma-nestjs-graphql/user/user.model';
 
 @Resolver(() => Blog)
 @UseGuards(RolesGuard)
@@ -57,11 +60,21 @@ export class BlogResolver {
 
   @ResolveField(() => User)
   author(@Parent() blog: Blog) {
-    return this.blogService.getAuthor(blog.authorId);
+    return this.blogService.getAuthor(blog.id);
   }
 
-  @ResolveField(() => User)
+  @ResolveField(() => Content)
   contents(@Parent() blog: Blog) {
-    return this.blogService.getContents(blog.authorId);
+    return this.blogService.getContents(blog.id);
+  }
+
+  @ResolveField(() => BlogStat)
+  blogStat(@Parent() blog: Blog) {
+    return this.blogService.getBlogStat(blog.id);
+  }
+
+  @ResolveField(() => Tag)
+  tags(@Parent() blog: Blog) {
+    return this.blogService.getTags(blog.id);
   }
 }

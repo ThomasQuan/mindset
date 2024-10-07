@@ -1,6 +1,7 @@
 import { ActionSlug, PrismaClient, ReferenceModelSlug } from '@prisma/client';
 import { blue, red, green, yellow } from 'colorette';
 import { permissions, roles, tags, users } from './seed.data';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -99,6 +100,7 @@ async function main() {
             data: {
               ...user,
               status: 'ACTIVE',
+              password: await bcrypt.hash(user.password, 10),
             },
           });
         }

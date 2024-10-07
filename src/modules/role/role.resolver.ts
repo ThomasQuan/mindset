@@ -8,16 +8,15 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { RoleService } from './role.service';
-import { Role } from './entities/role.entity';
 import { CreateRoleInput } from './dto/createRole.input';
 import { UpdateRoleInput } from './dto/updateRole.input';
 import { FindManyRolesInput } from './dto/findManyRoles.input';
-import { User } from '../user/entities/user.entity';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/guard/role.guard';
 import { Permission } from 'src/decorators/permission';
-import { Permission as PermissionGraphQL } from 'src/@generated/prisma-nestjs-graphql/permission/permission.model';
-
+import { Permission as PermissionPrisma } from '@prisma/client';
+import { Role } from 'src/@generated/prisma-nestjs-graphql/role/role.model';
+import { User } from 'src/@generated/prisma-nestjs-graphql/user/user.model';
 @Resolver(() => Role)
 @UseGuards(RolesGuard)
 export class RoleResolver {
@@ -66,8 +65,8 @@ export class RoleResolver {
     return this.roleService.getUsers(role.id);
   }
 
-  @ResolveField(() => [Permission])
-  async permissions(@Parent() role: Role): Promise<PermissionGraphQL[]> {
-    return this.roleService.getPermissions(role.id);
-  }
+  // @ResolveField(() => [PermissionEntity])
+  // async permissions(@Parent() role: Role): Promise<PermissionPrisma[]> {
+  //   return this.roleService.getPermissions(role.id);
+  // }
 }

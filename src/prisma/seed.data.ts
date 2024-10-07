@@ -1,5 +1,3 @@
-// ... existing code ...
-
 const users = [
   {
     firstName: 'Thomas',

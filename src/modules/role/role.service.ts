@@ -3,11 +3,11 @@ import { CreateRoleInput } from './dto/createRole.input';
 import { UpdateRoleInput } from './dto/updateRole.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FindManyRolesInput } from './dto/findManyRoles.input';
-import { User } from '../user/entities/user.entity';
 import { BaseService } from '../base/base.service';
-import { Role } from './entities/role.entity';
 import { slugify } from 'src/utils/string/slugify';
 import { Permission } from '@prisma/client';
+import { Role } from 'src/@generated/prisma-nestjs-graphql/role/role.model';
+import { User } from 'src/@generated/prisma-nestjs-graphql/user/user.model';
 
 @Injectable()
 export class RoleService extends BaseService<

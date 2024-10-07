@@ -2,118 +2,27 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type BlogStat {
-  id: ID!
-  likedCount: Int!
-  dislikedCount: Int!
-  visitedCount: Int!
-  blog: Blog!
-  blogId: String!
-}
-
-type Asset {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-type Tag {
-  id: ID!
-  title: String!
-  slug: String!
-  description: String
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  color: String
-  category: String
-  categoryOrder: Int
-  tagOrder: Int
-  blogs: [Blog!]!
-  projects: [Project!]!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type Project {
-  id: ID!
-  name: String!
-  subtitle: String
-  description: String
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  hasEdited: Boolean!
-  gitRepoLink: String
-  projectLink: String
-  designLink: String
-  status: ProjectStatus!
-  orderNo: Int!
-  objectAs: String!
-  author: User!
-  authorId: String!
-  tags: [Tag!]!
-  contents: [Content!]!
-}
-
-enum ProjectStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-type Content {
-  id: ID!
-  title: String!
-  slug: String!
-  markdownContent: String!
-  htmlContent: String!
-  status: ContentStatus!
-  orderNo: Int!
-  objectAs: String!
-  blog: Blog!
-  blogId: String!
-  project: Project!
-  projectId: String!
-  assets: [Asset!]!
-}
-
-enum ContentStatus {
-  HIDDEN
-  VISIBLE
-}
-
-type Blog {
-  id: ID!
-  title: String!
-  subtitle: String!
-  description: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  hasEdited: Boolean!
-  author: User!
-  authorId: String!
-  tags: [Tag!]!
-  contents: [Content!]!
-  blogStat: BlogStat!
-  status: BlogStatus!
-}
-
-enum BlogStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
+type PermissionCount {
+  roles: Int!
 }
 
 type Permission {
   id: ID!
   title: String!
   slug: String!
-  description: String!
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
   referenceModel: ReferenceModelSlug!
   action: ActionSlug!
-  roles: [Role!]!
+  roles: [Role!]
+  _count: PermissionCount!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 enum ReferenceModelSlug {
   blog
@@ -133,15 +42,161 @@ enum ActionSlug {
   delete
 }
 
+type RoleCount {
+  users: Int!
+  permissions: Int!
+}
+
 type Role {
   id: ID!
   title: String!
   slug: String!
-  description: String!
+  description: String
   createdAt: DateTime!
   updatedAt: DateTime!
   users: [User!]
   permissions: [Permission!]
+  _count: RoleCount!
+}
+
+type AssetCount {
+  contents: Int!
+}
+
+type Asset {
+  id: ID!
+  name: String!
+  url: String!
+  width: Int
+  height: Int
+  resolution: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  contents: [Content!]
+  _count: AssetCount!
+}
+
+type ContentCount {
+  assets: Int!
+}
+
+type Content {
+  id: ID!
+  title: String!
+  slug: String!
+  markdownContent: String!
+  htmlContent: String!
+  status: ContentStatus!
+  orderNo: Int!
+  objectAs: String!
+  blogId: String
+  projectId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  blog: Blog
+  project: Project
+  assets: [Asset!]
+  _count: ContentCount!
+}
+
+enum ContentStatus {
+  HIDDEN
+  VISIBLE
+}
+
+type ProjectCount {
+  tags: Int!
+  contents: Int!
+}
+
+type Project {
+  id: ID!
+  name: String!
+  subtitle: String
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  hasEdited: Boolean!
+  gitRepoLink: String
+  projectLink: String
+  designLink: String
+  status: ProjectStatus!
+  orderNo: Int!
+  objectAs: String!
+  authorId: String!
+  author: User!
+  tags: [Tag!]
+  contents: [Content!]
+  _count: ProjectCount!
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+type TagCount {
+  blogs: Int!
+  projects: Int!
+}
+
+type Tag {
+  id: ID!
+  title: String!
+  slug: String!
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  color: String
+  category: String
+  categoryOrder: Int
+  tagOrder: Int
+  blogs: [Blog!]
+  projects: [Project!]
+  _count: TagCount!
+}
+
+type BlogStat {
+  id: ID!
+  blogId: String!
+  likedCount: Int!
+  dislikedCount: Int!
+  visitedCount: Int!
+  blog: Blog!
+}
+
+type BlogCount {
+  tags: Int!
+  contents: Int!
+}
+
+type Blog {
+  id: ID!
+  title: String!
+  subtitle: String
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  hasEdited: Boolean!
+  authorId: String!
+  status: BlogStatus!
+  author: User!
+  tags: [Tag!]
+  contents: [Content!]
+  blogStat: BlogStat
+  _count: BlogCount!
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+type UserCount {
+  blogs: Int!
+  projects: Int!
 }
 
 type User {
@@ -155,11 +210,13 @@ type User {
   updatedAt: DateTime!
   title: String
   headline: String
-  lastActiveAt: DateTime
+  lastActiveAt: DateTime!
   avatarURL: String
-  role: Role
-  blogs: [Blog!]!
-  projects: [Project!]!
+  roleId: String!
+  role: Role!
+  blogs: [Blog!]
+  projects: [Project!]
+  _count: UserCount!
 }
 
 enum UserStatus {
@@ -185,7 +242,8 @@ type Query {
   project(id: ID!): Project!
   tags(findManyTagsInput: FindManyTagsInput): [Tag!]!
   tag(id: ID!): Tag!
-  asset(id: Int!): Asset!
+  assets(findManyAssetsInput: FindManyAssetsInput): [Asset!]!
+  asset(id: ID!): Asset!
   blogStat(id: ID!): BlogStat!
 }
 
@@ -734,6 +792,29 @@ input TagWhereUniqueInput {
   projects: ProjectListRelationFilter
 }
 
+input FindManyAssetsInput {
+  skip: Int
+  take: Int
+  cursor: AssetWhereUniqueInput
+  where: AssetWhereUniqueInput
+  orderBy: AssetWhereUniqueInput
+}
+
+input AssetWhereUniqueInput {
+  id: String
+  AND: [AssetWhereInput!]
+  OR: [AssetWhereInput!]
+  NOT: [AssetWhereInput!]
+  name: StringFilter
+  url: StringFilter
+  width: IntNullableFilter
+  height: IntNullableFilter
+  resolution: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  contents: ContentListRelationFilter
+}
+
 type Mutation {
   login(email: String!, password: String!): LoginResponse!
   createUser(createUserInput: CreateUserInput!): User!
@@ -757,7 +838,7 @@ type Mutation {
   deleteTag(id: ID!): Tag!
   createAsset(createAssetInput: CreateAssetInput!): Asset!
   updateAsset(updateAssetInput: UpdateAssetInput!): Asset!
-  removeAsset(id: Int!): Asset!
+  deleteAsset(id: ID!): Asset!
   createBlogStat(createBlogStatInput: CreateBlogStatInput!): BlogStat!
   updateBlogStat(updateBlogStatInput: UpdateBlogStatInput!): BlogStat!
   deleteBlogStat(id: ID!): BlogStat!
@@ -831,7 +912,7 @@ input CreateBlogInput {
   description: String!
   status: BlogStatus!
   authorId: String!
-  tagIds: [String!]!
+  tagIds: [String!]
   contents: [CreateContentInput!]!
 }
 
@@ -848,9 +929,9 @@ input CreateContentInput {
 input UpdateBlogInput {
   id: String!
   title: String
+  subtitle: String
   description: String
   status: BlogStatus
-  subtitle: String
   tagIds: [String!]
   contents: [UpdateContentInput!]
 }
@@ -916,14 +997,22 @@ input UpdateTagInput {
 }
 
 input CreateAssetInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  name: String!
+  url: String!
+  width: Int
+  height: Int
+  resolution: String
+  contentIds: [String!]
 }
 
 input UpdateAssetInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  name: String
+  url: String
+  width: Int
+  height: Int
+  resolution: String
+  contentIds: [String!]
+  id: ID!
 }
 
 input CreateBlogStatInput {

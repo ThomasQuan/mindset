@@ -1,26 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAssetInput } from './dto/create-asset.input';
-import { UpdateAssetInput } from './dto/update-asset.input';
+import { CreateAssetInput } from './dto/createAsset.input';
+import { UpdateAssetInput } from './dto/updateAsset.input';
+import { FindManyAssetsInput } from './dto/findManyAssets.input';
+import { BaseService } from '../base/base.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Asset } from 'src/@generated/prisma-nestjs-graphql/asset/asset.model';
 
 @Injectable()
-export class AssetService {
-  create(createAssetInput: CreateAssetInput) {
-    return 'This action adds a new asset';
-  }
-
-  findAll() {
-    return `This action returns all asset`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} asset`;
-  }
-
-  update(id: number, updateAssetInput: UpdateAssetInput) {
-    return `This action updates a #${id} asset`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} asset`;
+export class AssetService extends BaseService<
+  Asset,
+  CreateAssetInput,
+  UpdateAssetInput,
+  FindManyAssetsInput
+> {
+  constructor(prisma: PrismaService) {
+    super(prisma, 'asset', Asset);
   }
 }

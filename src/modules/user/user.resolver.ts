@@ -8,14 +8,18 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
-import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/createUser.input';
 import { UpdateUserInput } from './dto/updateUser.input';
 import { FindManyUsersInput } from './dto/findManyUser.input';
-import { Role } from '../role/entities/role.entity';
+import { Role as RolePrisma } from '@prisma/client';
 import { RolesGuard } from 'src/auth/guard/role.guard';
 import { UseGuards } from '@nestjs/common';
 import { Permission } from 'src/decorators/permission';
+import { Blog as BlogPrisma, Project as ProjectPrisma } from '@prisma/client';
+import { Role } from 'src/@generated/prisma-nestjs-graphql/role/role.model';
+import { Project } from 'src/@generated/prisma-nestjs-graphql/project/project.model';
+import { Blog } from 'src/@generated/prisma-nestjs-graphql/blog/blog.model';
+import { User } from 'src/@generated/prisma-nestjs-graphql/user/user.model';
 
 @Resolver(() => User)
 @UseGuards(RolesGuard)
@@ -63,7 +67,19 @@ export class UserResolver {
 
   @ResolveField(() => Role)
   @Permission(['read', 'role'])
-  async role(@Parent() user: User): Promise<Role> {
+  async role(@Parent() user: User): Promise<RolePrisma> {
     return this.userService.getRole(user.id);
+  }
+
+  @ResolveField(() => [Blog])
+  @Permission(['read', 'blog'])
+  async blogs(@Parent() user: User): Promise<BlogPrisma[]> {
+    return this.userService.getBlogs(user.id);
+  }
+
+  @ResolveField(() => [Project])
+  @Permission(['read', 'project'])
+  async projects(@Parent() user: User): Promise<ProjectPrisma[]> {
+    return this.userService.getProjects(user.id);
   }
 }

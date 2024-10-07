@@ -1,13 +1,22 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { BlogStatService } from './blogStat.service';
-import { BlogStat } from './entities/blogStat.entity';
 import { CreateBlogStatInput } from './dto/createBlogStat.input';
 import { UpdateBlogStatInput } from './dto/updateBlogStat.input';
 import { FindManyBlogStatsInput } from './dto/findManyBlogStat.input';
 import { RolesGuard } from 'src/auth/guard/role.guard';
 import { UseGuards } from '@nestjs/common';
 import { Permission } from 'src/decorators/permission';
-
+import { Blog } from 'src/@generated/prisma-nestjs-graphql/blog/blog.model';
+import { Blog as BlogPrisma } from '@prisma/client';
+import { BlogStat } from 'src/@generated/prisma-nestjs-graphql/blog-stat/blog-stat.model';
 @Resolver(() => BlogStat)
 @UseGuards(RolesGuard)
 export class BlogStatResolver {
@@ -50,5 +59,11 @@ export class BlogStatResolver {
   @Permission(['delete', 'blogStat'])
   deleteBlogStat(@Args('id', { type: () => ID }) id: string) {
     return this.blogStatService.delete(id);
+  }
+
+  @ResolveField(() => Blog)
+  @Permission(['read', 'blog'])
+  async blog(@Parent() blogStat: BlogStat): Promise<BlogPrisma> {
+    return this.blogStatService.getBlog(blogStat.id);
   }
 }

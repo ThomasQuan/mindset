@@ -4,8 +4,8 @@ import { UpdateBlogInput } from './dto/updateBlog.input';
 import { BaseService } from '../base/base.service';
 import { FindManyBlogsInput } from './dto/findManyBlog.input';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Blog } from './entities/blog.entity';
-import { Content, User } from '@prisma/client';
+import { BlogStat, Content, Tag, User } from '@prisma/client';
+import { Blog } from 'src/@generated/prisma-nestjs-graphql/blog/blog.model';
 
 @Injectable()
 export class BlogService extends BaseService<
@@ -18,14 +18,40 @@ export class BlogService extends BaseService<
     super(prisma, 'blog', Blog);
   }
 
-  async getAuthor(authorId: string): Promise<User> {
-    return this.prisma.user.findUnique({ where: { id: authorId } });
+  async create(data: CreateBlogInput): Promise<Blog> {
+    console.log(data);
+    return {} as Blog;
+  }
+
+  async getAuthor(id: string): Promise<User> {
+    const blog = await this.prisma.blog.findUnique({
+      where: { id },
+      select: { author: true },
+    });
+    return blog?.author;
   }
 
   async getContents(blogId: string): Promise<Content[]> {
-    return this.prisma.content.findMany({
-      where: { blogId },
-      orderBy: { orderNo: 'asc', title: 'asc', updatedAt: 'desc' },
+    const blog = await this.prisma.blog.findUnique({
+      where: { id: blogId },
+      select: { contents: true },
     });
+    return blog?.contents;
+  }
+
+  async getBlogStat(id: string): Promise<BlogStat> {
+    const blog = await this.prisma.blog.findUnique({
+      where: { id },
+      select: { blogStat: true },
+    });
+    return blog?.blogStat;
+  }
+
+  async getTags(id: string): Promise<Tag[]> {
+    const blog = await this.prisma.blog.findUnique({
+      where: { id },
+      select: { tags: true },
+    });
+    return blog?.tags;
   }
 }
