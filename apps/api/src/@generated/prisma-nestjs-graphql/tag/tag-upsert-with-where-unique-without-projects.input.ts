@@ -1,0 +1,23 @@
+import { Field } from '@nestjs/graphql';
+import { InputType } from '@nestjs/graphql';
+import { Prisma } from '@prisma/client';
+import { TagWhereUniqueInput } from './tag-where-unique.input';
+import { Type } from 'class-transformer';
+import { TagUpdateWithoutProjectsInput } from './tag-update-without-projects.input';
+import { TagCreateWithoutProjectsInput } from './tag-create-without-projects.input';
+
+@InputType()
+export class TagUpsertWithWhereUniqueWithoutProjectsInput {
+
+    @Field(() => TagWhereUniqueInput, {nullable:false})
+    @Type(() => TagWhereUniqueInput)
+    where!: Prisma.AtLeast<TagWhereUniqueInput, 'id' | 'slug'>;
+
+    @Field(() => TagUpdateWithoutProjectsInput, {nullable:false})
+    @Type(() => TagUpdateWithoutProjectsInput)
+    update!: TagUpdateWithoutProjectsInput;
+
+    @Field(() => TagCreateWithoutProjectsInput, {nullable:false})
+    @Type(() => TagCreateWithoutProjectsInput)
+    create!: TagCreateWithoutProjectsInput;
+}

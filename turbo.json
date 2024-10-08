@@ -1,0 +1,41 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": ["**/.env.*local"],
+    "tasks": {
+      "build": {
+        "dependsOn": ["^build"],
+        "inputs": ["$TURBO_DEFAULT", ".env*"],
+        "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      },
+      "prisma:migrate": {
+        "dependsOn": ["^prisma:migrate"],
+        "env": ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "DATABASE_SCHEMA", "JWT_PRIVATE_KEY_PATH", "JWT_PUBLIC_KEY_PATH", "DATABASE_URL", "ADMIN_PASSWORD", "ADMIN_EMAIL"]
+      },
+      "prisma:generate": {
+        "dependsOn": ["^prisma:generate"],
+        "env": ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "DATABASE_SCHEMA", "JWT_PRIVATE_KEY_PATH", "JWT_PUBLIC_KEY_PATH", "DATABASE_URL", "ADMIN_PASSWORD", "ADMIN_EMAIL"]
+      },
+      "prisma:deploy": {
+        "dependsOn": ["^prisma:deploy"],
+        "cache": false,
+        "env": ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "DATABASE_SCHEMA", "JWT_PRIVATE_KEY_PATH", "JWT_PUBLIC_KEY_PATH", "DATABASE_URL", "ADMIN_PASSWORD", "ADMIN_EMAIL"]
+      },
+      "lint": {
+        "dependsOn": ["^lint"]
+      },
+      "purge": {
+        "dependsOn": ["^purge"],
+        "cache": false
+      },
+      "prisma:seed": {
+        "dependsOn": ["^prisma:seed"],
+        "cache": false,
+        "env": ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "DATABASE_SCHEMA", "JWT_PRIVATE_KEY_PATH", "JWT_PUBLIC_KEY_PATH", "DATABASE_URL", "ADMIN_PASSWORD", "ADMIN_EMAIL"]
+      },
+      "start:dev": {
+        "persistent": true,
+        "cache": false,
+        "env": ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "DATABASE_SCHEMA", "JWT_PRIVATE_KEY_PATH", "JWT_PUBLIC_KEY_PATH", "DATABASE_URL", "ADMIN_PASSWORD", "ADMIN_EMAIL"]
+      }
+    }
+  }
